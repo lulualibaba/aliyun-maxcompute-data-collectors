@@ -24,6 +24,7 @@ import com.aliyun.odps.tunnel.TableTunnel;
 import com.aliyun.odps.tunnel.TableTunnel.UploadSession;
 import com.aliyun.odps.tunnel.TunnelException;
 import com.aliyun.odps.tunnel.io.TunnelBufferedWriter;
+import com.aliyun.odps.tunnel.io.CompressOption;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,7 +108,8 @@ public class OdpsTunnelWriter extends OdpsWriter {
             uploadSession = tunnel.createUploadSession(project, tableName,
                 new PartitionSpec(partition));
           }
-          writer = uploadSession.openRecordWriter(0, useCompress);
+          CompressOption option = useCompress ? new CompressOption(CompressOption.CompressAlgorithm.ODPS_SNAPPY, -1, 0) : null;
+          writer = uploadSession.openRecordWriter(0, option);
           for (Record r : mapEntry.getValue()) {
             writer.write(r);
           }
